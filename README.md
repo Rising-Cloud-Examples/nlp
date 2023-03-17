@@ -1,4 +1,4 @@
-This guide will walk you through the simple steps needed to build and train a natural language processor with ChatGPT2 on Rising Cloud.  You can clone all the files needed for this example from our GitHub repository at: https://github.com/Rising-Cloud-Examples/nlp
+This guide will walk you through the simple steps needed to build and train a natural language processor on Rising Cloud.
 
 1. Install the Rising Cloud Command Line Interface (CLI)
 In order to run the Rising Cloud commands in this guide, you will need to install the Rising Cloud Command Line Interface. This program provides you with the utilities to setup your Rising Cloud Task or Web Service, upload your application to Rising Cloud, setup authentication, and more.
@@ -95,4 +95,4 @@ should cause the “result” field in a completed Job Status to be:
 
 Hello, World!
 
-Congratulations, built a Natural Language Processor with ChatGPT2 on Rising Cloud!
+Congratulations, built a Natural Language Processor on Rising Cloud!
