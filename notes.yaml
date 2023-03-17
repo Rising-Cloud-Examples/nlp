@@ -1,0 +1,7 @@
+from: tensorflow:latest-gpu
+build: []
+deps:
+  - pip3 install -r requirements.txt
+daemons:
+  - python3 -m flask --app serve run
+run: python3 main.py
