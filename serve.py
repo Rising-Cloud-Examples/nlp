@@ -33,3 +33,7 @@ def predict():
             "request": {**data},
             "response": output
         })
+
+@app.route("/", methods=["GET"])
+def status():
+    return jsonify({"status": "live"})
