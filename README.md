@@ -1,4 +1,4 @@
-This guide will walk you through the simple steps needed to build and train a natural language processor on Rising Cloud.
+This guide will walk you through the simple steps needed to build and train a natural language processor on Rising Cloud.  You can clone all the files needed for this example from our GitHub repository at: https://github.com/Rising-Cloud-Examples/nlp
 
 1. Install the Rising Cloud Command Line Interface (CLI)
 In order to run the Rising Cloud commands in this guide, you will need to install the Rising Cloud Command Line Interface. This program provides you with the utilities to setup your Rising Cloud Task or Web Service, upload your application to Rising Cloud, setup authentication, and more.
@@ -30,21 +30,42 @@ Create Your NLP Program
 Create a new file called "main.py”
 
 import json
+import time
 import requests
+
+TF_SERVER = "http://localhost:5000"
 
 with open("request.json", "r") as f:
     req = json.load(f)
 
-# Send request to flask server
-tf_server = "http://localhost:5000"
-res = requests.post(tf_server + "/predict", json=req)
+# Check that server has started
+def serverIsRunning():
+    try:
+        requests.get(TF_SERVER + "/")
+        return True
+    except Exception as e:
+        print("Error checking server status: " + str(e))
+        return False
 
-# Write to response
-with open("response.json", "w") as f:
-    json.dump({
-        "request": {**req},
-        "response": res.json()
-    }, f)
+def main():
+    for _ in range(15):
+        if serverIsRunning():
+            # Send request to flask server
+            res = requests.post(TF_SERVER + "/predict", json=req)
+
+            # Write to response
+            with open("response.json", "w") as f:
+                json.dump({
+                    "request": {**req},
+                    "response": res.json()
+                }, f)
+            return
+        else:
+            print("Server not running, trying again...")
+            time.sleep(2)
+
+if __name__ == "__main__":
+    main()
 Create Your Requirements File
 
 Create a file named “requirements.txt”, and in it, write the following contents:
@@ -52,6 +73,49 @@ Create a file named “requirements.txt”, and in it, write the following conte
 Flask==2.2.3
 tensorflow==2.11.0
 transformers==4.27.1
+Create your DAEMON function
+
+Create a file named “serve.py”, and in it, write the following contents:
+
+import json
+from flask import Flask, request, jsonify
+from transformers import pipeline, set_seed
+
+app = Flask(__name__)
+
+# Load model pipeline in background
+generator = pipeline('text-generation', model='gpt2')
+set_seed(42)
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.get_json()
+
+    # Unpack request
+    prompt = data.get("prompt")
+    if prompt == None:
+        raise Exception("Did not provide a prompt for request")
+
+    # Unpack response size params
+    max_length=data.get("max_length", 10)
+    num_return_sequences=data.get("num_return_sequences", 1)
+
+    # Generate predictions
+    output = generator(
+        prompt, 
+        max_length=max_length, 
+        num_return_sequences=num_return_sequences
+    )
+
+    # Write to response
+    return jsonify({
+            "request": {**data},
+            "response": output
+        })
+
+@app.route("/", methods=["GET"])
+def status():
+    return jsonify({"status": "live"})
 Configure your risingcloud.yaml
 
 When you ran risingcloud init, a new risingcloud.yaml file should have generated in your project directory. Open that file now in your editor.  Change the from Base Image and Deps to the following:
@@ -94,5 +158,4 @@ Making a request with a JSON body of:
 should cause the “result” field in a completed Job Status to be:
 
 Hello, World!
-
-Congratulations, built a Natural Language Processor on Rising Cloud!
+Congratulations, you’ve successfully built a Natural Language Process  on Rising Cloud!
