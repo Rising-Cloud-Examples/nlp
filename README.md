@@ -120,7 +120,7 @@ Configure your risingcloud.yaml
 
 When you ran risingcloud init, a new risingcloud.yaml file should have generated in your project directory. Open that file now in your editor.  Change the from Base Image and Deps to the following:
 
-from: tensorflow:latest-gpu
+from: tensorflow/tensorflow:latest-gpu
 deps:
   - pip3 install -r requirements.txt
 We need to setup a daemon:
