@@ -70,9 +70,10 @@ Create Your Requirements File
 
 Create a file named “requirements.txt”, and in it, write the following contents:
 
-Flask==2.2.3
-tensorflow==2.11.0
-transformers==4.27.1
+Flask
+tensorflow
+transformers
+
 Create your DAEMON function
 
 Create a file named “serve.py”, and in it, write the following contents:
